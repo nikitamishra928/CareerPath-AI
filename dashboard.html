@@ -1,0 +1,350 @@
+ {% extends "base.html" %} {% block title %}Overview — CareerPath AI{% endblock %} {% block breadcrumb %}Overview{% endblock %} {% block content %}
+
+<!-- Chart data -->
+<div id="progress-data" data-completed="{{ counts.get('Completed', 0) }}" data-in-progress="{{ counts.get('In Progress', 0) }}" data-not-started="{{ counts.get('Not Started', 0) }}" hidden>
+</div>
+
+<script>
+    const progressElement = document.getElementById("progress-data");
+    const progressData = progressElement.dataset;
+
+    window.progressChartData = {
+        completed: Number(progressData.completed),
+        inProgress: Number(progressData.inProgress),
+        notStarted: Number(progressData.notStarted)
+    };
+</script>
+
+<div class="overview-page">
+
+    <!-- Welcome banner -->
+    <section class="overview-hero">
+
+        <div class="overview-hero-content">
+            <span class="overview-eyebrow">YOUR PERSONAL WORKSPACE</span>
+
+            <h1>
+                Welcome back, {{ student.name.split(' ')[0] }}
+                <span class="overview-wave">✦</span>
+            </h1>
+
+            <p>
+                Every skill you build brings your next opportunity closer. Keep learning, keep growing.
+            </p>
+
+            <div class="overview-hero-actions">
+                <a href="{{ url_for('recommendations') }}" class="overview-primary-btn">
+                    Explore career paths <span>→</span>
+                </a>
+
+                <a href="{{ url_for('profile') }}" class="overview-secondary-btn">
+                    Update profile
+                </a>
+            </div>
+        </div>
+
+        <div class="overview-hero-decoration">
+            <span>✧</span>
+            <small>LEARN · GROW · ACHIEVE</small>
+        </div>
+
+    </section>
+
+    <!-- Profile reminder -->
+    {% if not (student.skills|default('', true)|trim) or not (student.interests|default('', true)|trim) %}
+
+    <div class="overview-profile-notice">
+        <span class="notice-icon">✦</span>
+
+        <div>
+            <b>Complete your student profile</b>
+            <p>
+                Add your current skills and interests to receive personalized career recommendations.
+            </p>
+        </div>
+
+        <a href="{{ url_for('profile') }}">Complete profile →</a>
+    </div>
+
+    {% endif %}
+
+    <!-- Statistics -->
+    <section class="overview-stats">
+
+        <article class="overview-stat-card">
+            <div class="overview-stat-top">
+                <span>Skills tracked</span>
+                <span class="overview-stat-icon purple-stat">⌁</span>
+            </div>
+
+            <strong>{{ total }}</strong>
+            <small>Across your learning roadmap</small>
+
+            <div class="overview-stat-bottom">
+                <span>YOUR LEARNING JOURNEY</span>
+            </div>
+        </article>
+
+        <article class="overview-stat-card">
+            <div class="overview-stat-top">
+                <span>Skills completed</span>
+                <span class="overview-stat-icon green-stat">✓</span>
+            </div>
+
+            <strong>{{ completed }}</strong>
+            <small>Milestones you've finished</small>
+
+            <div class="overview-stat-bottom">
+                <span>COMPLETED MILESTONES</span>
+            </div>
+        </article>
+
+        <article class="overview-stat-card">
+            <div class="overview-stat-top">
+                <span>Overall progress</span>
+                <span class="overview-stat-icon blue-stat">↗</span>
+            </div>
+
+            <strong>{{ percent }}<small class="overview-percent">%</small></strong>
+            <small>Completion across tracked skills</small>
+
+            <div class="overview-stat-progress">
+                <div class="overview-stat-progress-fill" style="--progress-width: {{ percent|int }}%;">
+                </div>
+            </div>
+        </article>
+
+        <article class="overview-stat-card">
+            <div class="overview-stat-top">
+                <span>Career matches</span>
+                <span class="overview-stat-icon orange-stat">✧</span>
+            </div>
+
+            <strong>{{ recommendations|length }}</strong>
+            <small>Paths based on your profile</small>
+
+            <div class="overview-stat-bottom">
+                <span>CAREER POSSIBILITIES</span>
+            </div>
+        </article>
+
+    </section>
+
+    <!-- Main dashboard -->
+    <section class="overview-main-grid">
+
+        <!-- Learning progress -->
+        <article class="overview-panel overview-chart-panel" id="progress">
+
+            <div class="overview-panel-heading">
+                <div>
+                    <span class="overview-section-label">YOUR PERFORMANCE</span>
+                    <h2>Learning progress</h2>
+                    <p>Track your current skill completion.</p>
+                </div>
+
+                <span class="overview-period">ALL TIME</span>
+            </div>
+
+            <div class="overview-chart-area">
+
+                <div class="overview-chart-container">
+                    <canvas id="progressChart" aria-label="Learning progress chart">
+                    </canvas>
+
+                    <div class="overview-chart-center">
+                        <strong>{{ percent }}%</strong>
+                        <small>Completed</small>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="overview-chart-legend">
+
+                <div class="overview-legend-item">
+                    <span class="overview-legend-dot completed-dot"></span>
+                    <div>
+                        <small>Completed</small>
+                        <strong>{{ completed }}</strong>
+                    </div>
+                </div>
+
+                <div class="overview-legend-item">
+                    <span class="overview-legend-dot progress-dot"></span>
+                    <div>
+                        <small>In progress</small>
+                        <strong>{{ counts.get('In Progress', 0) }}</strong>
+                    </div>
+                </div>
+
+                <div class="overview-legend-item">
+                    <span class="overview-legend-dot pending-dot"></span>
+                    <div>
+                        <small>Not started</small>
+                        <strong>{{ counts.get('Not Started', 0) }}</strong>
+                    </div>
+                </div>
+
+            </div>
+
+        </article>
+
+        <!-- Career recommendations -->
+        <article class="overview-panel overview-matches-panel">
+
+            <div class="overview-panel-heading">
+                <div>
+                    <span class="overview-section-label">CAREER DISCOVERY</span>
+                    <h2>Recommended for you</h2>
+                    <p>Career directions worth exploring.</p>
+                </div>
+
+                <a href="{{ url_for('recommendations') }}" class="overview-view-all">
+                    View all ↗
+                </a>
+            </div>
+
+            <div class="overview-career-list">
+
+                {% for career in recommendations %}
+
+                <a class="overview-career-item" href="{{ url_for('career_detail', slug=career.slug) }}">
+
+                    <span class="overview-career-number">
+                        {{ "%02d"|format(loop.index) }}
+                    </span>
+
+                    <span class="overview-career-info">
+                        <strong>{{ career.title }}</strong>
+                        <small>{{ career.level }} · {{ career.duration }}</small>
+                    </span>
+
+                    <span class="overview-career-match">
+                        {% if career.match is not none %}
+                            {{ career.match }}%
+                        {% else %}
+                            New
+                        {% endif %}
+                        <small>MATCH</small>
+                    </span>
+
+                    <span class="overview-career-arrow">→</span>
+
+                </a>
+
+                {% else %}
+
+                <div class="overview-no-matches">
+                    <span>✧</span>
+                    <b>No career matches yet</b>
+                    <p>Complete your profile to explore career options.</p>
+
+                    <a href="{{ url_for('profile') }}">
+                        Update profile →
+                    </a>
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            <a href="{{ url_for('recommendations') }}" class="overview-all-careers-btn">
+                Explore all career paths <span>→</span>
+            </a>
+
+        </article>
+
+    </section>
+
+    <!-- Recent activity -->
+    <section class="overview-panel overview-recent-panel">
+
+        <div class="overview-panel-heading">
+            <div>
+                <span class="overview-section-label">YOUR ACTIVITY</span>
+                <h2>Recently updated skills</h2>
+                <p>Your latest learning progress.</p>
+            </div>
+
+            <a href="{{ url_for('recommendations') }}" class="overview-view-all">
+                Explore skills ↗
+            </a>
+        </div>
+
+        {% if recent %}
+
+        <div class="overview-table-wrap">
+
+            <table class="overview-activity-table">
+
+                <thead>
+                    <tr>
+                        <th>SKILL</th>
+                        <th>CAREER PATH</th>
+                        <th>STATUS</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for row in recent %}
+
+                    <tr>
+                        <td>
+                            <span class="overview-table-skill">
+                                <span>✦</span> {{ row.skill_name }}
+                            </span>
+                        </td>
+
+                        <td>{{ row.career_title }}</td>
+
+                        <td>
+                            <span class="status-pill status-{{ row.status|lower|replace(' ','-') }}">
+                                {{ row.status }}
+                            </span>
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="overview-empty-state">
+            <span>⌁</span>
+            <h3>Your learning activity will appear here</h3>
+            <p>
+                Choose a career path and start tracking the skills you want to develop.
+            </p>
+
+            <a href="{{ url_for('recommendations') }}" class="overview-primary-btn">
+                Explore career paths →
+            </a>
+        </div>
+
+        {% endif %}
+
+    </section>
+
+    <!-- Bottom learning message -->
+    <section class="overview-bottom-banner">
+        <div>
+            <span>✦ YOUR NEXT STEP</span>
+            <h3>Small progress every day leads to big achievements.</h3>
+            <p>Continue learning and update your skill checklist regularly.</p>
+        </div>
+
+        <a href="{{ url_for('roadmap') }}" class="overview-bottom-btn">
+            Open learning roadmap →
+        </a>
+    </section>
+
+</div>
+
+{% endblock %}

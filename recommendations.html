@@ -1,0 +1,129 @@
+ {% extends "base.html" %} {% block title %}Career Matches — CareerPath AI{% endblock %} {% block breadcrumb %}Career Matches{% endblock %} {% block content %}
+
+<section class="career-page">
+
+    <!-- Page Heading -->
+    <div class="career-page-heading">
+        <div>
+            <span class="career-eyebrow">YOUR FUTURE STARTS HERE</span>
+            <h1>Explore Your Career Matches</h1>
+            <p>Discover career paths based on your skills, interests and profile.</p>
+        </div>
+        <div class="career-heading-icon">✦</div>
+    </div>
+
+    <!-- Profile Notice -->
+    {% if not student.skills and not student.interests %}
+    <div class="career-notice">
+        <div class="notice-symbol">✦</div>
+        <div class="notice-content">
+            <strong>Let's personalize your career journey!</strong>
+            <p>Add your skills and interests to receive more meaningful career recommendations.</p>
+        </div>
+        <a href="{{ url_for('profile') }}" class="notice-button">
+            Update Profile →
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Career Recommendations -->
+    {% if recommendations %}
+
+    <div class="career-results-heading">
+        <div>
+            <h2>Recommended Career Paths</h2>
+            <p>Explore the opportunities that match your profile.</p>
+        </div>
+        <span class="career-count">
+            {{ recommendations|length }} Careers Found
+        </span>
+    </div>
+
+    <div class="career-grid">
+
+        {% for career in recommendations %}
+
+        <article class="career-card">
+
+            <!-- Card Header -->
+            <div class="career-card-top">
+                <div class="career-symbol large">
+                    {{ "%02d"|format(loop.index) }}
+                </div>
+
+                {% if career.match is not none %}
+                <span class="match-tag">
+                        {{ career.match }}% Match
+                    </span> {% else %}
+                <span class="match-tag">Explore Career</span> {% endif %}
+            </div>
+
+            <!-- Career Details -->
+            <div class="career-card-content">
+                <h2>{{ career.title }}</h2>
+                <p class="career-description">
+                    {{ career.description }}
+                </p>
+            </div>
+
+            <!-- Match Progress -->
+            {% if career.match is not none %}
+            <div class="career-match-section">
+
+                <div class="match-label">
+                    <span>Profile Match</span>
+                    <strong>{{ career.match }}%</strong>
+                </div>
+
+                <div class="career-match-track">
+                    <div class="career-match-fill" style="--match-width: {{ career.match|int }}%;">
+                    </div>
+                </div>
+
+            </div>
+            {% endif %}
+
+            <!-- Career Information -->
+            <div class="career-meta">
+                <span>◷ {{ career.duration }}</span>
+                <span>◇ {{ career.level }}</span>
+            </div>
+
+            <!-- Required Skills -->
+            <div class="career-skills">
+                <h4>Key Skills</h4>
+
+                <div class="skill-preview">
+                    {% for skill in career.skills[:4] %}
+                    <span>{{ skill }}</span> {% endfor %}
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <a class="btn btn-secondary btn-full career-action" href="{{ url_for('career_detail', slug=career.slug) }}">
+                Explore Career Roadmap <span>→</span>
+            </a>
+
+        </article>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <!-- Empty State -->
+    <div class="career-empty">
+        <div class="empty-icon">✧</div>
+        <h2>No career recommendations available</h2>
+        <p>Update your profile with your skills and interests to explore career options.</p>
+        <a href="{{ url_for('profile') }}" class="btn btn-primary">
+            Update My Profile →
+        </a>
+    </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

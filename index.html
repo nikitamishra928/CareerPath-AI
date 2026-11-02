@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}CareerPath AI — Find your direction{% endblock %}
+{% block public_content %}
+<div class="public-nav"><a class="brand" href="/"><span class="brand-mark">C</span><span>CareerPath<span class="brand-ai"> AI</span></span></a><div><a class="nav-login" href="{{ url_for('login') }}">Log in</a><a class="btn btn-primary btn-small" href="{{ url_for('register') }}">Get started <span>→</span></a></div></div>
+<section class="hero">
+  <div class="hero-copy">
+    <div class="eyebrow"><span class="sparkle">✦</span> YOUR NEXT CHAPTER STARTS HERE</div>
+    <h1>Make your skills<br>work for your <span>future.</span></h1>
+    <p class="hero-text">Discover career paths that fit your strengths. Find your skill gaps. Build a learning roadmap that takes you from where you are to where you want to be.</p>
+    <div class="hero-actions"><a class="btn btn-primary" href="{{ url_for('register') }}">Explore your career path <span>→</span></a><a class="text-link" href="{{ url_for('login') }}">I already have an account</a></div>
+    <div class="hero-proof"><div class="proof-avatars"><i>A</i><i>R</i><i>S</i></div><span><b>Your growth, your pace.</b><br>One focused step at a time.</span></div>
+  </div>
+  <div class="hero-visual">
+    <div class="glow-orb"></div>
+    <div class="preview-card preview-main"><div class="preview-head"><span class="mini-label">CAREER INSIGHT</span><span class="live-pill">● LIVE PREVIEW</span></div><h3>Your strengths have a direction.</h3><p class="muted">Example career compatibility</p><div class="match-row"><div><b>Data Scientist</b><small>Strong analytical fit</small></div><strong class="match-number">92%</strong></div><div class="progress-track"><span style="width:92%"></span></div><div class="match-row"><div><b>Machine Learning Engineer</b><small>Technical growth path</small></div><strong class="match-number">84%</strong></div><div class="progress-track"><span style="width:84%"></span></div><div class="preview-foot"><span>✦</span> Your real matches are calculated from your profile.</div></div>
+    <div class="floating-chip chip-top">✧ Personalized roadmap</div><div class="floating-chip chip-bottom"><span class="chip-check">✓</span> Progress that you can see</div>
+  </div>
+</section>
+<section class="feature-strip"><div><span>✧</span><b>Discover</b><small>Career paths aligned to you</small></div><div><span>⌁</span><b>Understand</b><small>See the skills you need next</small></div><div><span>↗</span><b>Grow</b><small>Track every learning milestone</small></div></section>
+{% endblock %}

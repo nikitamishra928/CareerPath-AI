@@ -1,0 +1,143 @@
+ {% extends "base.html" %} {% block title %}Skill Roadmap | CareerPath AI{% endblock %} {% block breadcrumb %}Skill Roadmap{% endblock %} {% block content %}
+
+<section class="roadmap-page">
+
+    <!-- Header -->
+    <div class="roadmap-hero">
+        <div class="roadmap-hero-content">
+            <span class="roadmap-eyebrow">YOUR PERSONAL LEARNING PLAN</span>
+            <h1>Build Skills. Shape Your Future.</h1>
+            <p>
+                Choose your career goal and follow a structured learning path to move closer to your dream role.
+            </p>
+
+            <a href="{{ url_for('recommendations') }}" class="roadmap-hero-btn">
+                Explore Career Matches <span>→</span>
+            </a>
+        </div>
+
+        <div class="roadmap-hero-visual">
+            <div class="roadmap-visual-circle">✦</div>
+            <span class="visual-label">LEARN</span>
+            <span class="visual-arrow">↓</span>
+            <span class="visual-label">GROW</span>
+            <span class="visual-arrow">↓</span>
+            <span class="visual-label">ACHIEVE</span>
+        </div>
+    </div>
+
+    <!-- Introduction -->
+    <div class="roadmap-welcome">
+        <div class="welcome-icon">✧</div>
+        <div>
+            <h3>Your learning journey starts here</h3>
+            <p>
+                Explore career pathways, understand the skills required, and open a roadmap to start learning step by step.
+            </p>
+        </div>
+    </div>
+
+    <!-- Section Heading -->
+    <div class="roadmap-section-heading">
+        <div>
+            <span class="roadmap-eyebrow">FIND YOUR DIRECTION</span>
+            <h2>Choose Your Career Path</h2>
+            <p>
+                {{ recommendations|length }} career pathways available
+            </p>
+        </div>
+
+        <a href="{{ url_for('recommendations') }}" class="roadmap-view-link">
+            View all matches ↗
+        </a>
+    </div>
+
+    <!-- Career Cards -->
+    <div class="roadmap-career-grid">
+
+        {% for career in recommendations %}
+
+        <article class="roadmap-career-card">
+
+            <div class="roadmap-card-top">
+                <div class="roadmap-number">
+                    {{ "%02d"|format(loop.index) }}
+                </div>
+                <span class="roadmap-card-label">CAREER PATH</span>
+            </div>
+
+            <div class="roadmap-card-body">
+                <h3>{{ career.title }}</h3>
+
+                <p class="roadmap-card-description">
+                    {{ career.description }}
+                </p>
+            </div>
+
+            <!-- Career Details -->
+            <div class="roadmap-details">
+
+                <div class="roadmap-detail-item">
+                    <span class="roadmap-detail-icon">◷</span>
+                    <div>
+                        <small>Estimated duration</small>
+                        <strong>{{ career.duration }}</strong>
+                    </div>
+                </div>
+
+                <div class="roadmap-detail-item">
+                    <span class="roadmap-detail-icon">◎</span>
+                    <div>
+                        <small>Difficulty level</small>
+                        <strong>{{ career.level }}</strong>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Skills -->
+            <div class="roadmap-card-skills">
+                <div class="roadmap-skills-heading">
+                    <h4>Skills to develop</h4>
+                    <span>{{ career.skills|length }} skills</span>
+                </div>
+
+                <div class="roadmap-skill-list">
+                    {% for skill in career.skills[:5] %}
+                    <span class="roadmap-skill-chip">{{ skill }}</span> {% endfor %} {% if career.skills|length > 5 %}
+                    <span class="roadmap-skill-more">
+                        +{{ career.skills|length - 5 }} more
+                    </span> {% endif %}
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="roadmap-card-footer">
+                <a href="{{ url_for('career_detail', slug=career.slug) }}" class="roadmap-open-btn">
+                    View Learning Roadmap
+                    <span>→</span>
+                </a>
+            </div>
+
+        </article>
+
+        {% else %}
+
+        <div class="roadmap-empty">
+            <div class="empty-icon">✧</div>
+            <h2>No career pathways available</h2>
+            <p>
+                Update your profile with your skills and interests to explore career recommendations.
+            </p>
+            <a href="{{ url_for('profile') }}" class="roadmap-open-btn">
+                Update My Profile →
+            </a>
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endblock %}

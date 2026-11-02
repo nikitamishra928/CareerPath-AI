@@ -1,0 +1,202 @@
+{% extends "base.html" %} {% block title %}{{ career.title }} — CareerPath AI{% endblock %} {% block breadcrumb %}{{ career.title }}{% endblock %} {% block content %}
+
+<div class="career-roadmap-page">
+
+    <!-- Back navigation -->
+    <a href="{{ url_for('recommendations') }}" class="career-back-link">
+        <span>←</span> All career paths
+    </a>
+
+    <!-- Career hero section -->
+    <section class="career-hero">
+        <div class="career-hero-content">
+            <span class="career-hero-label">YOUR PERSONAL LEARNING PATH</span>
+
+            <h1>{{ career.title }}</h1>
+
+            <p>{{ career.description }}</p>
+
+            <div class="career-hero-tags">
+                <span>◷ {{ career.duration }}</span>
+                <span>◇ {{ career.level }}</span>
+                <span>✦ {{ career.skills|length }} Core Skills</span>
+            </div>
+        </div>
+
+        <div class="career-hero-icon">✧</div>
+    </section>
+
+    <!-- Main layout -->
+    <div class="career-learning-layout">
+
+        <main class="career-learning-main">
+
+            <div class="learning-section-heading">
+                <div>
+                    <span class="section-eyebrow">YOUR LEARNING JOURNEY</span>
+                    <h2>Build your skills step by step</h2>
+                    <p>Update each skill as you learn. Your progress is saved automatically.</p>
+                </div>
+
+                <div class="learning-count">
+                    <span>{{ gap|length }}</span>
+                    <small>Skills</small>
+                </div>
+            </div>
+
+            <div class="career-skill-list">
+
+                {% for item in gap %}
+
+                <article class="career-learning-card">
+
+                    <!-- Skill heading -->
+                    <div class="career-skill-top">
+
+                        <div class="career-skill-number {{ 'completed-number' if item.status == 'Completed' or item.matched else '' }}">
+                            {% if item.status == 'Completed' or item.matched %} ✓ {% else %} {{ "%02d"|format(loop.index) }} {% endif %}
+                        </div>
+
+                        <div class="career-skill-info">
+                            <h3>{{ item.skill }}</h3>
+
+                            <span class="career-skill-description">
+                                {{ 'Already in your profile' if item.matched else 'Add this skill to your learning goals' }}
+                            </span>
+                        </div>
+
+                        <select class="status-select career-status-select" data-career="{{ career.title }}" data-skill="{{ item.skill }}" aria-label="Update {{ item.skill }} learning status">
+
+                            <option value="Not Started"
+                                {% if item.status == 'Not Started' %}selected{% endif %}>
+                                Not Started
+                            </option>
+
+                            <option value="In Progress"
+                                {% if item.status == 'In Progress' %}selected{% endif %}>
+                                In Progress
+                            </option>
+
+                            <option value="Completed"
+                                {% if item.status == 'Completed' %}selected{% endif %}>
+                                Completed
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- Learning resources -->
+                    <div class="career-resource-box">
+
+                        <div class="career-resource-heading">
+                            <span class="career-resource-icon">✦</span>
+                            <div>
+                                <h4>Start learning {{ item.skill }}</h4>
+                                <p>Explore these free learning resources.</p>
+                            </div>
+                        </div>
+
+                        <p class="career-resource-description">
+                            {{ resources[item.skill].description }}
+                        </p>
+
+                        <div class="career-resource-actions">
+
+                            <a class="career-resource-link video-link" href="{{ resources[item.skill].video_url }}" target="_blank" rel="noopener noreferrer">
+
+                                <span class="resource-action-icon">▶</span>
+                                <span>Watch video tutorials</span>
+                                <span class="resource-action-arrow">↗</span>
+
+                            </a>
+
+                            <a class="career-resource-link article-link" href="{{ resources[item.skill].article_url }}" target="_blank" rel="noopener noreferrer">
+
+                                <span class="resource-action-icon">▤</span>
+                                <span>Read tutorials</span>
+                                <span class="resource-action-arrow">↗</span>
+
+                            </a>
+
+                        </div>
+
+                        <div class="career-free-resource-note">
+                            <span>✓</span> Free online learning resources
+                        </div>
+
+                    </div>
+
+                </article>
+
+                {% else %}
+
+                <div class="career-empty-state">
+                    <div>✧</div>
+                    <h3>No skills available</h3>
+                    <p>Check your career recommendation data.</p>
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            <div class="career-save-message" id="saveHint" aria-live="polite">
+                <span>✓</span> Changes save automatically.
+            </div>
+
+        </main>
+
+        <!-- Sidebar -->
+        <aside class="career-learning-sidebar">
+
+            <div class="career-sidebar-card">
+
+                <div class="career-sidebar-icon">✦</div>
+
+                <span class="section-eyebrow">YOUR CAREER PLAN</span>
+                <h3>Learning direction</h3>
+
+                <p class="career-sidebar-description">
+                    Follow your learning path consistently and track each skill as you improve.
+                </p>
+
+                <div class="career-sidebar-detail">
+                    <span>Suggested timeline</span>
+                    <strong>{{ career.duration }}</strong>
+                </div>
+
+                <div class="career-sidebar-detail">
+                    <span>Experience level</span>
+                    <strong>{{ career.level }}</strong>
+                </div>
+
+                <div class="career-sidebar-detail">
+                    <span>Total core skills</span>
+                    <strong>{{ career.skills|length }}</strong>
+                </div>
+
+                <div class="career-sidebar-tip">
+                    <span>💡</span>
+                    <p>
+                        <strong>Learning tip</strong> Focus on one skill at a time. Practice what you learn by building small projects.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="career-sidebar-card career-sidebar-note">
+                <span class="career-note-icon">◎</span>
+                <h4>Keep moving forward</h4>
+                <p>
+                    Mark a skill as completed only after you understand it and have practised it.
+                </p>
+            </div>
+
+        </aside>
+
+    </div>
+
+</div>
+
+{% endblock %}
